@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0c1117">
+<title>4G Primavera · Copa Primavera Huanguelén</title>
+<style>
+  :root{
+    --bg:#0c1117; --card:#151d27; --card2:#1c2632; --line:#2a3846;
+    --txt:#e9f2f6; --dim:#8497a6;
+    --coral:#2dd4bf; --coral-dk:#14b8a6; --pink:#a3e635; --gold:#facc15;
+    --red:#f87171; --blue:#38bdf8; --orange:#fbbf24; --green:#a3e635;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{font-size:16px}
+  body{background:
+      radial-gradient(680px 380px at 92% -8%,rgba(45,212,191,.20),transparent 60%),
+      radial-gradient(620px 420px at -10% 8%,rgba(163,230,53,.12),transparent 58%),
+      var(--bg);
+    background-attachment:fixed;color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding-bottom:100px;min-height:100vh}
+  /* ---------- header ---------- */
+  header{background:linear-gradient(135deg,#0f3d3a 0%,#0c5a52 52%,#0c1117 100%);
+    padding:18px 16px 16px;display:flex;align-items:center;gap:13px;
+    border-bottom:1px solid #12403a;box-shadow:0 8px 24px rgba(0,0,0,.5);position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;inset:0;background:radial-gradient(320px 170px at 15% -20%,rgba(45,212,191,.35),transparent 70%);pointer-events:none}
+  .logo{width:66px;height:66px;flex:none;filter:drop-shadow(0 5px 12px rgba(0,0,0,.55))}
+  .brand h1{font-size:1.7rem;font-weight:900;letter-spacing:.5px;line-height:1;color:#eafffb;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .brand h1 sup{color:#a3e635;font-size:1rem}
+  .brand .tag{font-size:.66rem;color:#99f6e4;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;font-weight:700}
+  .cup{margin-left:auto;text-align:right}
+  .cup .badge{display:inline-block;background:rgba(45,212,191,.18);border:1px solid rgba(45,212,191,.55);color:#d6fff7;font-size:.62rem;font-weight:800;letter-spacing:.05em;padding:4px 9px;border-radius:99px;text-transform:uppercase}
+  .cup .conn{display:block;font-size:.62rem;margin-top:6px;color:#9fb4c2}
+  .cup .conn b{font-weight:800}
+  .conn.on b{color:#34d399} .conn.off b{color:#fbbf24}
+  .admin-toggle{background:rgba(255,255,255,.08);border:1px solid rgba(45,212,191,.5);color:#d6fff7;font-size:.62rem;font-weight:800;padding:5px 10px;border-radius:99px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-top:6px}
+  .admin-toggle.on{background:var(--coral);color:#052b27;border-color:var(--coral)}
+  #app-ver{display:block;font-size:.58rem;color:#5f7688;margin-top:5px}
+  /* ---------- nav ---------- */
+  nav{position:fixed;bottom:0;left:0;right:0;background:#0e1620eb;backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -6px 20px rgba(0,0,0,.4)}
+  nav button{flex:1;background:none;border:none;color:var(--dim);font-size:.72rem;font-weight:700;padding:10px 2px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+  nav button .ic{font-size:1.9rem;line-height:1.15}
+  nav button.act{color:var(--coral)}
+  nav button.act .ic{background:rgba(45,212,191,.16);border-radius:14px;padding:3px 14px;box-shadow:inset 0 0 0 1px rgba(45,212,191,.4)}
+  /* ---------- common ---------- */
+  main{padding:14px 14px 20px;max-width:640px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 10px 26px rgba(0,0,0,.4)}
+  .livecard{border-color:var(--coral);background:linear-gradient(180deg,rgba(45,212,191,.08),var(--card))}
+  .pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--coral);animation:pu 1.2s infinite;margin-right:4px}
+  @keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+  h2{font-size:1.05rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  h3{font-size:.85rem;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px}
+  .muted{color:var(--dim);font-size:.82rem;line-height:1.5}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:15px;font-size:1rem;font-weight:800;cursor:pointer;color:#052b27;background:linear-gradient(135deg,#2dd4bf,#14b8a6);box-shadow:0 6px 16px rgba(45,212,191,.35)}
+  .btn:disabled{opacity:.4;box-shadow:none}
+  .btn.ghost{background:var(--card2);color:var(--txt);box-shadow:none;border:1px solid var(--line)}
+  .btn.danger{background:none;color:var(--red);box-shadow:none;border:1px solid #7f3a3a}
+  .row{display:flex;gap:10px}
+  .row .btn{flex:1}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  th{color:var(--dim);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:6px 6px;border-bottom:2px solid var(--line)}
+  td{padding:9px 6px;border-bottom:1px solid #1e2836}
+  tr:last-child td{border-bottom:none}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  th.num{text-align:right}
+  .empty{text-align:center;padding:28px 10px;color:var(--dim);font-size:.85rem;line-height:1.6}
+  .empty .big{font-size:2rem;display:block;margin-bottom:8px}
+  /* ---------- ranking ---------- */
+  .podium{display:flex;gap:8px;align-items:flex-end;margin-bottom:14px}
+  .pod{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;text-align:center;padding:12px 6px;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+  .pod .medal{font-size:1.5rem}
+  .pod .pname{font-weight:800;font-size:.86rem;margin:4px 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pod .ppts{font-size:1.15rem;font-weight:900;color:var(--coral)}
+  .pod .psub{font-size:.62rem;color:var(--dim)}
+  .pod.p1{padding-top:20px;border-color:var(--gold);background:linear-gradient(180deg,rgba(250,204,21,.12),var(--card))}
+  .rk-pos{font-weight:900;color:var(--dim);width:28px}
+  .rk-name{font-weight:700}
+  .rk-pts{font-weight:900;color:var(--coral)}
+  /* ---------- players ---------- */
+  .addrow{display:flex;gap:8px;margin-bottom:14px}
+  .addrow input{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--txt);font-size:1rem}
+  .addrow input:focus{outline:none;border-color:var(--coral)}
+  .addrow button{background:var(--coral);border:none;border-radius:12px;width:52px;font-size:1.5rem;font-weight:800;color:#052b27;cursor:pointer}
+  .pl-item{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid #1e2836}
+  .pl-item:last-child{border-bottom:none}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--coral);flex:none}
+  .pl-item .nm{font-weight:700;flex:1}
+  .pl-item .sub{font-size:.68rem;color:var(--dim)}
+  .del{background:none;border:none;color:#5f7688;font-size:1.05rem;cursor:pointer;padding:6px}
+  .hc-btn{background:none;border:1px solid var(--line);color:var(--dim);font-size:1rem;cursor:pointer;padding:5px 8px;border-radius:10px;margin-right:4px}
+  .hc-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(250,204,21,.14)}
+  /* ---------- match setup ---------- */
+  .sel-item{display:flex;align-items:center;gap:10px;padding:12px 8px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;background:var(--card2)}
+  .sel-item.on{border-color:var(--coral);background:rgba(45,212,191,.10)}
+  .sel-item .ord{margin-left:auto;background:var(--coral);color:#052b27;font-weight:900;font-size:.72rem;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  /* ---------- play ---------- */
+  .prog{display:flex;justify-content:space-between;align-items:baseline;font-size:.84rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:800;margin-bottom:12px}
+  .prog b{color:var(--gold);font-size:2rem;font-weight:900;line-height:1;margin:0 3px}
+  .turn{background:linear-gradient(135deg,#0f3d3a,#0c5a52);border:1px solid #12b49f55;border-radius:16px;padding:14px;text-align:center;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+  .turn .who{font-size:1.3rem;font-weight:900;color:#eafffb}
+  .turn .what{font-size:.72rem;color:#99f6e4;text-transform:uppercase;letter-spacing:.1em;margin-top:2px;font-weight:700}
+  .breadcrumb{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:6px;min-height:26px}
+  .bc{font-size:.66rem;font-weight:800;padding:4px 8px;border-radius:99px;background:var(--card2);border:1px solid var(--line);color:var(--dim)}
+  .bc b{color:var(--txt)}
+  .glabel{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin:12px 0 8px;color:var(--coral)}
+  .zones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .zone{border:2px solid var(--line);background:linear-gradient(180deg,#1e2937,#151d27);border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;transition:transform .06s;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+  .zone:active{transform:scale(.94)}
+  .zone .sym{font-size:1.7rem;display:block;line-height:1.2}
+  .zone .zn{font-size:.6rem;font-weight:800;letter-spacing:.04em;display:block;margin-top:3px;color:var(--txt)}
+  .zone .zp{font-size:.72rem;font-weight:900;display:block;margin-top:2px}
+  .z-fuera .zp{color:var(--red)} .z-circulo .zp{color:var(--blue)} .z-cuadrado .zp{color:var(--orange)} .z-hoyo .zp{color:var(--green)}
+  .balldots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+  .dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.18)}
+  .dot.done{background:#5eead4} .dot.cur{background:var(--gold);transform:scale(1.25)}
+  .liveboard td,.liveboard th{padding:7px 4px}
+  .lead{color:var(--coral);font-weight:900}
+  /* ---------- rules ---------- */
+  .ptable td:first-child{display:flex;align-items:center;gap:8px;font-weight:700}
+  .chip{display:inline-flex;width:30px;height:30px;border-radius:9px;align-items:center;justify-content:center;font-size:1rem;background:var(--card2);border:1px solid var(--line)}
+  .bigpts{font-weight:900;font-size:.95rem}
+  .step{display:flex;gap:10px;margin-bottom:12px}
+  .step .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--coral);color:#052b27;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+  .step p{font-size:.85rem;line-height:1.5;color:#b9c8d2}
+  .step p b{color:var(--txt)}
+  .winline{background:rgba(250,204,21,.12);border:1px solid var(--gold);border-radius:12px;padding:12px;text-align:center;font-weight:800;color:#fde68a;margin-bottom:12px}
+  /* ---------- admin modal ---------- */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;width:100%;max-width:340px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+  .modal h3{color:var(--txt);font-size:1.05rem;text-transform:none;letter-spacing:0;margin-bottom:6px;text-align:center}
+  .modal p{color:var(--dim);font-size:.8rem;text-align:center;margin-bottom:16px}
+  .pin-in{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--txt);font-size:1.6rem;text-align:center;letter-spacing:.5em;font-weight:800;margin-bottom:14px}
+  .pin-in:focus{outline:none;border-color:var(--coral)}
+  .pin-in.err{border-color:var(--red);animation:shake .3s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  /* ---------- marca de agua ---------- */
+  body::before{content:"";position:fixed;inset:0;background:url('logo.png') no-repeat center center;background-size:min(150vw,780px);opacity:.07;pointer-events:none;z-index:0}
+  header,main{position:relative;z-index:1}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <img class="logo" src="logo.png" alt="Torneo Golf 4 Golpes · Primavera 26">
+
+  <div class="brand">
+    <h1>4G <sup>Primavera</sup></h1>
+    <div class="tag">Cuatro golpes, un objetivo</div>
+  </div>
+  <div class="cup">
+    <span class="badge">🏌 Copa Primavera Huanguelén</span>
+    <span class="conn off" id="conn"><b>●</b> modo local</span>
+    <button class="admin-toggle" id="admin-btn" onclick="toggleAdmin()">🔒 Admin</button>
+    <span id="app-ver"></span>
+  </div>
+</header>
+
+<main>
+  <section id="tab-ranking"><div id="rk-body"></div></section>
+
+  <section id="tab-partida" class="hidden">
+    <div id="m-setup">
+      <div id="m-resume"></div>
+      <div class="card">
+        <h2>🏌 Nueva partida</h2>
+        <p class="muted" style="margin-bottom:12px">Elegí los jugadores <b>en el orden en que van a tirar</b>. Se alternan de a 2 bolas por salida.</p>
+        <div id="m-plist"></div>
+        <button class="btn" id="m-start" disabled onclick="startMatch()">Comenzar partida</button>
+      </div>
+    </div>
+    <div id="m-play" class="hidden">
+      <div class="card">
+        <div class="prog"><span>Salida <b id="p-jug">1</b>/3</span><span>Bola <b id="p-ball">1</b>/6</span></div>
+        <div class="turn">
+          <div class="who" id="p-who">—</div>
+          <div class="what" id="p-what">Golpe 1</div>
+          <div class="balldots" id="p-dots"></div>
+        </div>
+        <div class="breadcrumb" id="p-breadcrumb"></div>
+        <div class="glabel" id="g-lab">Golpe 1 — ¿dónde quedó?</div>
+        <div class="zones" id="g-zones"></div>
+        <button class="btn" style="margin-top:14px" id="reg-btn" onclick="registerProgress()">💾 REGISTRAR</button>
+        <p class="muted" style="text-align:center;margin-top:8px;font-size:.7rem">Se guarda solo tras cada golpe · los demás lo ven en vivo en el Ranking</p>
+        <div class="row" style="margin-top:10px">
+          <button class="btn ghost" onclick="undo()">↩︎ Deshacer</button>
+          <button class="btn danger" onclick="cancelMatch()">Cancelar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📊 Tablero en vivo</h2>
+        <table class="liveboard" id="p-board"></table>
+      </div>
+    </div>
+    <div id="m-done" class="hidden">
+      <div class="card">
+        <h2>🏁 Partida terminada</h2>
+        <div class="winline" id="d-winner"></div>
+        <table id="d-table"></table>
+        <button class="btn" style="margin-top:14px" onclick="saveMatch()">✅ REGISTRAR PARTIDA</button>
+        <button class="btn danger" style="margin-top:8px" onclick="cancelMatch()">Descartar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-jugadores" class="hidden">
+    <div class="card">
+      <h2>👤 Jugadores</h2>
+      <div class="addrow">
+        <input id="pl-name" type="text" placeholder="Nombre del nuevo jugador" maxlength="20" onkeydown="if(event.key==='Enter')addPlayer()">
+        <button onclick="addPlayer()">+</button>
+      </div>
+      <div id="pl-list"></div>
+    </div>
+  </section>
+
+  <section id="tab-stats" class="hidden"><div id="st-body"></div></section>
+
+  <section id="tab-reglas" class="hidden">
+    <div class="card">
+      <h2>🎯 El campo</h2>
+      <svg viewBox="0 0 300 190" style="width:100%;border-radius:12px" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="190" fill="#0f2027"/>
+        <ellipse cx="150" cy="97" rx="88" ry="72" fill="rgba(56,189,248,.10)" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4"/>
+        <rect x="105" y="60" width="90" height="74" fill="rgba(251,191,36,.14)" stroke="#fbbf24" stroke-width="2.5" rx="3"/>
+        <circle cx="150" cy="104" r="10" fill="#0a0f14" stroke="#a3e635" stroke-width="2"/>
+        <line x1="150" y1="104" x2="150" y2="52" stroke="#e6f0f0" stroke-width="2.5"/>
+        <path d="M150 52 L176 60 L150 68 Z" fill="#2dd4bf"/>
+        <text x="150" y="182" fill="#38bdf8" font-size="11" text-anchor="middle" font-weight="800">CÍRCULO</text>
+        <text x="150" y="47" fill="#fbbf24" font-size="11" text-anchor="middle" font-weight="800">CUADRADO</text>
+        <text x="170" y="112" fill="#a3e635" font-size="10" font-weight="800">HOYO</text>
+      </svg>
+      <p class="muted" style="margin-top:10px">En el medio hay un <b style="color:var(--blue)">círculo</b> mayor, adentro un <b style="color:var(--orange)">cuadrado</b> más chico y en el centro el <b style="color:var(--green)">hoyo</b>. Se emboca con palo y pelota de golf.</p>
+    </div>
+    <div class="card">
+      <h2>📖 Cómo se juega</h2>
+      <div class="step"><div class="n">1</div><p>Cada jugador tira <b>6 bolas</b> por partida, en <b>3 salidas de 2 bolas</b> cada una (salida 1 = bolas 1‑2, salida 2 = bolas 3‑4, salida 3 = bolas 5‑6).</p></div>
+      <div class="step"><div class="n">2</div><p>Cada bola se juega con <b>hasta 4 golpes</b>. Después de cada golpe se registra dónde quedó: <b>Fuera, Círculo, Cuadrado u Hoyo</b>.</p></div>
+      <div class="step"><div class="n">3</div><p><b style="color:var(--green)">Si emboca al hoyo, la bola termina</b> ahí (en el golpe que sea) y no se juegan los golpes siguientes.</p></div>
+      <div class="step"><div class="n">4</div><p><b style="color:var(--coral)">Un golpe suma solo si cambia de zona</b> respecto al golpe anterior. Si queda en la misma zona que el golpe previo, ese golpe vale 0.</p></div>
+      <div class="step"><div class="n">5</div><p>Gana la partida quien más suma. Todo va al <b>ranking de la Copa Primavera</b> (ordenado por promedio).</p></div>
+    </div>
+    <div class="card">
+      <h2>🧮 Puntajes por golpe y zona</h2>
+      <div style="overflow-x:auto"><table class="ptable">
+        <tr><th>Zona</th><th class="num">Golpe 1</th><th class="num">Golpe 2</th><th class="num">Golpe 3</th><th class="num">Golpe 4</th></tr>
+        <tr><td><span class="chip">✕</span> Fuera</td><td class="num bigpts" style="color:var(--red)">0</td><td class="num bigpts" style="color:var(--red)">0</td><td class="num bigpts" style="color:var(--red)">0</td><td class="num bigpts" style="color:var(--red)">0</td></tr>
+        <tr><td><span class="chip">◯</span> Círculo</td><td class="num bigpts" style="color:var(--blue)">2</td><td class="num bigpts" style="color:var(--blue)">1</td><td class="num bigpts" style="color:var(--blue)">0</td><td class="num bigpts" style="color:var(--blue)">0</td></tr>
+        <tr><td><span class="chip">◻</span> Cuadrado</td><td class="num bigpts" style="color:var(--orange)">6</td><td class="num bigpts" style="color:var(--orange)">3</td><td class="num bigpts" style="color:var(--orange)">1</td><td class="num bigpts" style="color:var(--orange)">0</td></tr>
+        <tr><td><span class="chip">⛳</span> Hoyo</td><td class="num bigpts" style="color:var(--green)">18</td><td class="num bigpts" style="color:var(--green)">9</td><td class="num bigpts" style="color:var(--green)">3</td><td class="num bigpts" style="color:var(--green)">1</td></tr>
+      </table></div>
+      <h3>Ejemplos</h3>
+      <p class="muted">
+      • Golpe 1 al <b style="color:var(--green)">hoyo</b> = <b style="color:var(--txt)">18</b> y la bola termina.<br>
+      • G1 <b style="color:var(--blue)">círculo (2)</b> + G2 <b style="color:var(--orange)">cuadrado (3)</b> + G3 <b style="color:var(--green)">hoyo (3)</b> = <b style="color:var(--txt)">8</b> (termina en el hoyo).<br>
+      • G1 <b style="color:var(--blue)">círculo (2)</b> + G2 <b style="color:var(--blue)">círculo (0, misma zona)</b> = <b style="color:var(--txt)">2</b>.<br>
+      Máximo por bola: <b style="color:var(--txt)">18</b> (hoyo en 1). Máximo por partida: <b style="color:var(--txt)">108</b> (6 bolas).</p>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button id="nav-ranking" class="act" onclick="go('ranking')"><span class="ic">🏆</span>Ranking</button>
+  <button id="nav-partida" onclick="go('partida')"><span class="ic">🏌</span>Partida</button>
+  <button id="nav-jugadores" onclick="go('jugadores')"><span class="ic">👤</span>Jugadores</button>
+  <button id="nav-stats" onclick="go('stats')"><span class="ic">📈</span>Stats</button>
+  <button id="nav-reglas" onclick="go('reglas')"><span class="ic">📖</span>Reglas</button>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   CONFIGURACIÓN ONLINE (Firebase) — mismo proyecto, rama de datos propia
+   'copa-primavera' (ver INSTRUCCIONES.md). Si no hay conexión, la app
+   funciona en modo local (datos solo en este dispositivo).
+===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAQue5TgbEI2dLrnEPgT0390WBRr7AhXt0",
+  authDomain: "golpe2---copa-huanguelen.firebaseapp.com",
+  databaseURL: "https://golpe2---copa-huanguelen-default-rtdb.firebaseio.com",
+  projectId: "golpe2---copa-huanguelen",
+  storageBucket: "golpe2---copa-huanguelen.firebasestorage.app",
+  messagingSenderId: "742351300549",
+  appId: "1:742351300549:web:98447a5e0276af13f04dac"
+};
+const DB_NODE = "copa-primavera";
+/* ===================================================================== */
+
+const APP_VERSION = "1.03"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
+
+const ADMIN_PIN = "1234"; // clave admin de 4 dígitos (cambiala por la que quieras)
+let isAdmin = false;
+
+const GOLPES = ['g1','g2','g3','g4'];
+const PTS4 = {
+  g1:{fuera:0,circulo:2,cuadrado:6,hoyo:18},
+  g2:{fuera:0,circulo:1,cuadrado:3,hoyo:9},
+  g3:{fuera:0,circulo:0,cuadrado:1,hoyo:3},
+  g4:{fuera:0,circulo:0,cuadrado:0,hoyo:1}
+};
+const HOYO_PTS = [18,9,3,1]; // puntos de hoyo según el golpe (1..4) — competencia por hoyo
+const ZONES = [
+  {k:'fuera',label:'FUERA',sym:'✕'},
+  {k:'circulo',label:'CÍRCULO',sym:'◯'},
+  {k:'cuadrado',label:'CUADRADO',sym:'◻'},
+  {k:'hoyo',label:'HOYO',sym:'⛳'}
+];
+const N_SALIDAS = 3, N_BOLAS = 2; // 3 salidas de 2 bolas = 6 bolas
+
+let DB = { players:{}, matches:{}, handicap:{} };
+let online = false, fdb = null;
+const LS_KEY = 'golpe2_primavera';
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+/* ---------- puntajes ---------- */
+function ballPts(rec){
+  let t=0, prev=null;
+  for(let i=0;i<4;i++){
+    const z = rec[GOLPES[i]];
+    if(!z) break;
+    if(z==='hoyo'){ t += PTS4[GOLPES[i]].hoyo; break; } // emboca: termina
+    if(z!==prev) t += PTS4[GOLPES[i]][z];               // suma solo si cambió de zona
+    prev = z;
+  }
+  return t;
+}
+function matchTotal(jugadas){
+  return jugadas.reduce((a,sal)=> a + sal.reduce((b,r)=>b + ballPts(r), 0), 0);
+}
+function filledCount(rec){ let c=0; for(let i=0;i<4;i++){ if(rec[GOLPES[i]]) c++; else break; } return c; }
+function matchMetrics(pl){
+  let hoyos=0, golpes=0, emb=0;
+  pl.jugadas.forEach(sal=>sal.forEach(rec=>{
+    for(let i=0;i<4;i++){ const z=rec[GOLPES[i]]; if(!z) break; golpes++; if(z!=='fuera') emb++; if(z==='hoyo'){ hoyos++; break; } }
+  }));
+  return { total: matchTotal(pl.jugadas), hoyos, golpes, emb };
+}
+
+/* ---------- persistencia ---------- */
+function initData(){
+  document.getElementById('app-ver').textContent = 'v'+APP_VERSION;
+  const cfgOk = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'PEGAR_AQUI' && typeof firebase !== 'undefined';
+  if(cfgOk){
+    try{
+      firebase.initializeApp(FIREBASE_CONFIG);
+      fdb = firebase.database().ref(DB_NODE);
+      fdb.on('value', snap => {
+        const v = snap.val() || {};
+        DB = { players: v.players || {}, matches: v.matches || {}, handicap: v.handicap || {}, live: v.live || null };
+        renderAll();
+      });
+      online = true;
+      const c = document.getElementById('conn');
+      c.className = 'conn on'; c.innerHTML = '<b>●</b> online';
+      return;
+    }catch(e){ console.warn('Firebase falló, uso modo local', e); }
+  }
+  try{ DB = JSON.parse(localStorage.getItem(LS_KEY)) || {players:{},matches:{}}; }catch(e){ DB = {players:{},matches:{}}; }
+  DB.players = DB.players || {}; DB.matches = DB.matches || {}; DB.handicap = DB.handicap || {};
+  renderAll();
+}
+function saveLocal(){ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }
+function persistPlayer(p){ if(online){ fdb.child('players/'+p.id).set(p); } else { DB.players[p.id]=p; saveLocal(); renderAll(); } }
+function removePlayer(id){ if(online){ fdb.child('players/'+id).remove(); } else { delete DB.players[id]; saveLocal(); renderAll(); } }
+function persistMatch(m){ if(online){ fdb.child('matches/'+m.id).set(m); } else { DB.matches[m.id]=m; saveLocal(); renderAll(); } }
+function removeMatch(id){ if(online){ fdb.child('matches/'+id).remove(); } else { delete DB.matches[id]; saveLocal(); renderAll(); } }
+
+/* recuperación de partidas guardadas solo en este dispositivo */
+function localOnlyMatches(){
+  if(!online) return [];
+  let local; try{ local = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ return []; }
+  const lm = local.matches || {};
+  return Object.values(lm).filter(m=> m && m.id && Array.isArray(m.players) && !DB.matches[m.id]);
+}
+function recoveryCardHtml(){
+  if(!isAdmin) return '';
+  const miss = localOnlyMatches();
+  if(!miss.length) return '';
+  const list = miss.sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(m=>{
+    const tots = m.players.map(p=>matchTotal(p.jugadas)); const mx = Math.max(...tots);
+    const line = m.players.map((p,i)=>(tots[i]===mx&&m.players.length>1?'🏅 ':'')+esc(p.name)+' <b>'+tots[i]+'</b>').join(' · ');
+    const d = m.date?new Date(m.date):null;
+    const fecha = d?d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}):'—';
+    return '<div class="pl-item"><div style="flex:1"><div style="font-size:.85rem">'+line+'</div><div class="sub">'+fecha+'</div></div></div>';
+  }).join('');
+  return '<div class="card livecard"><h2>🛟 Partidas sin subir en este dispositivo</h2>'+
+    '<p class="muted" style="margin-bottom:10px">Este dispositivo tiene <b>'+miss.length+'</b> partida'+(miss.length===1?'':'s')+' guardada'+(miss.length===1?'':'s')+' localmente que no está'+(miss.length===1?'':'n')+' en el servidor. Revisá y subilas.</p>'+
+    list+'<button class="btn" style="margin-top:12px" onclick="uploadLocalMatches()">⬆️ Subir '+miss.length+' al servidor</button></div>';
+}
+function uploadLocalMatches(){
+  if(!isAdmin){ alert('Solo el administrador puede subir partidas.'); return; }
+  const miss = localOnlyMatches();
+  if(!miss.length){ alert('No hay partidas locales pendientes.'); return; }
+  if(!confirm('¿Subir '+miss.length+' partida(s) de este dispositivo a la Copa?')) return;
+  miss.forEach(m=> fdb.child('matches/'+m.id).set(m));
+  alert(miss.length+' partida(s) subida(s).');
+}
+
+/* hándicap por jugador (solo admin) */
+function toggleHandicap(id){
+  if(!isAdmin){ alert('Solo el administrador puede aplicar el hándicap.'); return; }
+  DB.handicap = DB.handicap || {};
+  const on = !DB.handicap[id];
+  if(on){ DB.handicap[id]=true; const chrono=playerMatchesChrono(id); if(chrono.length<5) alert('Hándicap activado. Empezará a descartar el peor partido cuando complete lotes de 5 (por ahora tiene '+chrono.length+').'); }
+  else delete DB.handicap[id];
+  if(online){ fdb.child('handicap').set(DB.handicap); } else { saveLocal(); renderAll(); }
+}
+
+/* partida en vivo */
+function persistLive(){
+  if(!game) return;
+  const payload = { id:game.id, date:game.date, json: JSON.stringify({pids:game.pids,names:game.names,scores:game.scores,idx:game.idx,golpe:game.golpe}) };
+  if(online){ fdb.child('live').set(payload); } else { DB.live=payload; saveLocal(); }
+}
+function clearLive(){ if(online){ fdb.child('live').remove(); } else { DB.live=null; saveLocal(); } }
+function registerProgress(){ persistLive(); const b=document.getElementById('reg-btn'); b.textContent='✓ Registrado'; setTimeout(()=>{b.textContent='💾 REGISTRAR';},1200); }
+
+/* ---------- navegación ---------- */
+const TABS = ['ranking','partida','jugadores','stats','reglas'];
+function go(t){
+  TABS.forEach(x=>{ document.getElementById('tab-'+x).classList.toggle('hidden', x!==t); document.getElementById('nav-'+x).classList.toggle('act', x===t); });
+  window.scrollTo(0,0);
+}
+
+/* ---------- admin ---------- */
+function toggleAdmin(){ if(isAdmin){ isAdmin=false; refreshAdminUI(); return; } openPinModal(); }
+function openPinModal(){
+  const bg=document.createElement('div'); bg.className='modal-bg'; bg.id='pin-modal';
+  bg.innerHTML='<div class="modal"><h3>🔒 Acceso administrador</h3><p>Ingresá la clave de 4 dígitos para poder borrar partidas y aplicar hándicap.</p>'+
+    '<input class="pin-in" id="pin-input" type="tel" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">'+
+    '<button class="btn" onclick="checkPin()">Entrar</button><button class="btn ghost" style="margin-top:8px" onclick="closePinModal()">Cancelar</button></div>';
+  document.body.appendChild(bg);
+  bg.addEventListener('click',e=>{ if(e.target===bg) closePinModal(); });
+  const inp=document.getElementById('pin-input'); inp.focus(); inp.addEventListener('keydown',e=>{ if(e.key==='Enter') checkPin(); });
+}
+function closePinModal(){ const m=document.getElementById('pin-modal'); if(m) m.remove(); }
+function checkPin(){
+  const inp=document.getElementById('pin-input');
+  if(inp.value===ADMIN_PIN){ isAdmin=true; closePinModal(); refreshAdminUI(); }
+  else { inp.classList.add('err'); inp.value=''; setTimeout(()=>inp.classList.remove('err'),400); inp.focus(); }
+}
+function refreshAdminUI(){ const b=document.getElementById('admin-btn'); b.classList.toggle('on',isAdmin); b.textContent=isAdmin?'🔓 Admin ✓':'🔒 Admin'; renderAll(); }
+
+/* ---------- jugadores ---------- */
+function addPlayer(){
+  const inp=document.getElementById('pl-name'); const name=inp.value.trim(); if(!name) return;
+  if(Object.values(DB.players).some(p=>p.name.toLowerCase()===name.toLowerCase())){ alert('Ya existe un jugador con ese nombre.'); return; }
+  persistPlayer({ id:uid(), name, createdAt:new Date().toISOString() }); inp.value=''; inp.focus();
+}
+function delPlayer(id){
+  if(!isAdmin){ alert('Solo el administrador puede borrar.'); return; }
+  const p=DB.players[id]; if(!p) return;
+  if(Object.values(DB.matches).some(m=>m.players.some(x=>x.id===id))){ alert('Este jugador ya tiene partidas registradas. No se puede borrar.'); return; }
+  if(confirm('¿Borrar a '+p.name+'?')) removePlayer(id);
+}
+function renderPlayers(){
+  const list=document.getElementById('pl-list');
+  const ps=Object.values(DB.players).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!ps.length){ list.innerHTML='<div class="empty"><span class="big">👥</span>Todavía no hay jugadores.<br>Agregá el primero arriba.</div>'; return; }
+  const stats=playerStats();
+  list.innerHTML=ps.map(p=>{
+    const s=stats[p.id]; const hcOn=!!(DB.handicap&&DB.handicap[p.id]);
+    let sub;
+    if(s){ sub=s.pj+' partida'+(s.pj===1?'':'s')+' · '+s.pts+' pts'; if(hcOn) sub+=' · <span style="color:var(--gold)">⚖️ hándicap'+(s.dropped?' (-'+s.dropped+')':'')+'</span>'; }
+    else sub='Sin partidas todavía'+(hcOn?' · <span style="color:var(--gold)">⚖️ hándicap</span>':'');
+    let right='';
+    if(isAdmin){ right+='<button class="hc-btn '+(hcOn?'on':'')+'" onclick="toggleHandicap(\''+p.id+'\')" title="Aplicar hándicap">⚖️</button>'; right+='<button class="del" onclick="delPlayer(\''+p.id+'\')">🗑</button>'; }
+    return '<div class="pl-item"><div class="avatar">'+esc(initials(p.name))+'</div><div style="min-width:0"><div class="nm">'+esc(p.name)+'</div><div class="sub">'+sub+'</div></div><div style="margin-left:auto;display:flex;align-items:center">'+right+'</div></div>';
+  }).join('');
+  if(isAdmin) list.innerHTML+='<p class="muted" style="margin-top:10px">⚖️ Hándicap: descarta el peor partido de cada 5 (cronológico). No borra nada; los descartados se marcan en el historial y no cuentan en las estadísticas ni el ranking de ese jugador.</p>';
+}
+
+/* ---------- estadísticas ---------- */
+function playerMatchesChrono(pid){
+  const arr=[];
+  Object.values(DB.matches).forEach(m=>{ const idx=m.players.findIndex(p=>p.id===pid); if(idx<0) return; arr.push({ mid:m.id, date:m.date||'', total:matchTotal(m.players[idx].jugadas) }); });
+  arr.sort((a,b)=> a.date.localeCompare(b.date) || a.mid.localeCompare(b.mid));
+  return arr;
+}
+function excludedSetFor(pid){
+  const set=new Set();
+  if(!DB.handicap||!DB.handicap[pid]) return set;
+  const arr=playerMatchesChrono(pid);
+  for(let start=0; start+5<=arr.length; start+=5){ let w=start; for(let k=start;k<start+5;k++){ if(arr[k].total<arr[w].total) w=k; } set.add(arr[w].mid); }
+  return set;
+}
+function newZ(){ const z={}; GOLPES.forEach(g=> z[g]={fuera:0,circulo:0,cuadrado:0,hoyo:0}); return z; }
+function playerStats(){
+  const st={};
+  const exMap={}; const allP=new Set();
+  Object.values(DB.matches).forEach(m=>m.players.forEach(p=>allP.add(p.id)));
+  allP.forEach(pid=> exMap[pid]=excludedSetFor(pid));
+  Object.values(DB.matches).forEach(m=>{
+    const totals=m.players.map(pl=>matchTotal(pl.jugadas)); const max=Math.max(...totals);
+    m.players.forEach((p,pi)=>{
+      if(!st[p.id]) st[p.id]={ name:p.name, pj:0, wins:0, pts:0, ptsG:[0,0,0,0], hoyos:0, hoyoBy:[0,0,0,0], hoyoPts:0, golpes:0, embocadas:0, best:0, bestSalida:0, dropped:0, handicap:!!(DB.handicap&&DB.handicap[p.id]), z:newZ() };
+      const s=st[p.id]; s.name=p.name;
+      if(exMap[p.id]&&exMap[p.id].has(m.id)){ s.dropped++; return; }
+      const tot=totals[pi]; s.pj++; s.pts+=tot;
+      if(tot===max && m.players.length>1) s.wins++;
+      if(tot>s.best) s.best=tot;
+      p.jugadas.forEach(sal=>{
+        const sp=sal.reduce((a,r)=>a+ballPts(r),0); if(sp>s.bestSalida) s.bestSalida=sp;
+        sal.forEach(rec=>{
+          let prev=null;
+          for(let i=0;i<4;i++){
+            const z=rec[GOLPES[i]]; if(!z) break;
+            s.golpes++; if(z!=='fuera') s.embocadas++; s.z[GOLPES[i]][z]++;
+            if(z==='hoyo'){ s.hoyos++; s.hoyoBy[i]++; s.hoyoPts+=HOYO_PTS[i]; s.ptsG[i]+=PTS4[GOLPES[i]].hoyo; break; }
+            if(z!==prev) s.ptsG[i]+=PTS4[GOLPES[i]][z];
+            prev=z;
+          }
+        });
+      });
+    });
+  });
+  return st;
+}
+
+/* ---------- ranking ---------- */
+function liveCardHtml(){
+  if(!DB.live) return '';
+  if(game && game.id===DB.live.id) return '';
+  try{
+    const L=JSON.parse(DB.live.json); const P=L.pids.length;
+    const totals=L.pids.map(id=>matchTotal(L.scores[id])); const done=L.idx>=P*6;
+    let stateTxt='Partida terminada, falta registrar';
+    if(!done){ const j=Math.floor(L.idx/(P*N_BOLAS)), rem=L.idx%(P*N_BOLAS), p=Math.floor(rem/N_BOLAS), b=rem%N_BOLAS; stateTxt='Tira '+esc(L.names[p])+' · Bola '+(j*N_BOLAS+b+1)+' de 6'; }
+    const max=Math.max(...totals);
+    return '<div class="card livecard"><h2><span class="pulse"></span>EN VIVO</h2>'+
+      '<table><tr><th>Jugador</th><th class="num">S1</th><th class="num">S2</th><th class="num">S3</th><th class="num">Total</th></tr>'+
+      L.names.map((n,i)=>{ const js=L.scores[L.pids[i]].map(sal=>sal.reduce((a,r)=>a+ballPts(r),0)); const lead=totals[i]===max&&max>0; return '<tr><td class="rk-name">'+(lead?'<span class="lead">'+esc(n)+'</span>':esc(n))+'</td><td class="num">'+js[0]+'</td><td class="num">'+js[1]+'</td><td class="num">'+js[2]+'</td><td class="num rk-pts">'+totals[i]+'</td></tr>'; }).join('')+
+      '</table><p class="muted" style="margin-top:8px;font-size:.72rem">'+stateTxt+'</p></div>';
+  }catch(e){ return ''; }
+}
+function renderRanking(){
+  const el=document.getElementById('rk-body'); const st=playerStats();
+  const rows=Object.entries(st).map(([id,s])=>({id,...s})).filter(r=>r.pj>0).sort((a,b)=> (b.pts/b.pj)-(a.pts/a.pj) || b.pts-a.pts || b.hoyos-a.hoyos);
+  if(!rows.length){ el.innerHTML=recoveryCardHtml()+liveCardHtml()+'<div class="card"><div class="empty"><span class="big">🏆</span>El ranking está esperando la primera partida.<br>Cargá jugadores y ¡a jugar!</div></div>'; return; }
+  let html=recoveryCardHtml()+liveCardHtml();
+  if(rows.length>=2){
+    const medals=['🥇','🥈','🥉']; const order=rows.length>=3?[1,0,2]:[1,0];
+    html+='<div class="podium">'+order.map(i=>{ const r=rows[i]; if(!r) return ''; return '<div class="pod '+(i===0?'p1':'')+'"><div class="medal">'+medals[i]+'</div><div class="pname">'+esc(r.name)+'</div><div class="ppts">'+(r.pts/r.pj).toFixed(1)+'</div><div class="psub">'+r.pj+' PJ · '+r.pts+' pts</div></div>'; }).join('')+'</div>';
+  }
+  html+='<div class="card"><h2>🏆 Ranking Copa Primavera</h2><p class="muted" style="margin-bottom:10px">Ordenado por promedio de puntos por partida.</p><table><tr><th></th><th>Jugador</th><th class="num">PJ</th><th class="num">Pts</th><th class="num">Prom</th></tr>'+
+    rows.map((r,i)=>'<tr><td class="rk-pos">'+(i+1)+'</td><td class="rk-name">'+esc(r.name)+(r.handicap&&r.dropped?' <span style="color:var(--gold);font-size:.7rem">⚖️-'+r.dropped+'</span>':'')+'</td><td class="num">'+r.pj+'</td><td class="num">'+r.pts+'</td><td class="num rk-pts">'+(r.pts/r.pj).toFixed(1)+'</td></tr>').join('')+
+    '</table></div>';
+  el.innerHTML=html;
+}
+
+/* ---------- nueva partida ---------- */
+let game=null, selOrder=[];
+function renderSetup(){
+  const res=document.getElementById('m-resume');
+  if(DB.live && !game){
+    let names=''; try{ names=JSON.parse(DB.live.json).names.join(' vs '); }catch(e){}
+    res.innerHTML='<div class="card livecard"><h2><span class="pulse"></span>Partida en curso</h2><p class="muted" style="margin-bottom:12px">'+esc(names)+'</p><div class="row"><button class="btn" onclick="resumeMatch()">▶ Continuar</button><button class="btn danger" onclick="discardLive()">Descartar</button></div></div>';
+  } else res.innerHTML='';
+  const list=document.getElementById('m-plist');
+  const ps=Object.values(DB.players).sort((a,b)=>a.name.localeCompare(b.name));
+  selOrder=selOrder.filter(id=>DB.players[id]);
+  if(!ps.length){ list.innerHTML='<div class="empty"><span class="big">👥</span>Primero agregá jugadores en la pestaña Jugadores.</div>'; }
+  else { list.innerHTML=ps.map(p=>{ const idx=selOrder.indexOf(p.id); return '<div class="sel-item '+(idx>=0?'on':'')+'" onclick="togglePlayer(\''+p.id+'\')"><div class="avatar">'+esc(initials(p.name))+'</div><div class="nm" style="font-weight:700">'+esc(p.name)+'</div>'+(idx>=0?'<div class="ord">'+(idx+1)+'</div>':'')+'</div>'; }).join(''); }
+  const b=document.getElementById('m-start'); b.disabled=selOrder.length<1; b.textContent=selOrder.length<1?'Elegí al menos un jugador':'Comenzar partida ('+selOrder.length+' jugador'+(selOrder.length===1?'':'es')+')';
+}
+function togglePlayer(id){ const i=selOrder.indexOf(id); if(i>=0) selOrder.splice(i,1); else selOrder.push(id); renderSetup(); }
+function buildSeq(n){ const seq=[]; for(let j=0;j<N_SALIDAS;j++) for(let p=0;p<n;p++) for(let b=0;b<N_BOLAS;b++) seq.push({j,p,b}); return seq; }
+function emptyScores(n,pids){ const sc={}; pids.forEach(id=>{ sc[id]=[]; for(let j=0;j<N_SALIDAS;j++){ const sal=[]; for(let b=0;b<N_BOLAS;b++) sal.push({g1:null,g2:null,g3:null,g4:null}); sc[id].push(sal); } }); return sc; }
+function startMatch(){
+  const pids=[...selOrder];
+  game={ id:uid(), date:new Date().toISOString(), pids, names:pids.map(id=>DB.players[id].name), scores:emptyScores(pids.length,pids), seq:buildSeq(pids.length), idx:0, golpe:1, hist:[] };
+  persistLive();
+  document.getElementById('m-setup').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden'); document.getElementById('m-play').classList.remove('hidden');
+  renderPlay();
+}
+function resumeMatch(){
+  if(!DB.live) return;
+  try{ const L=JSON.parse(DB.live.json); game={ id:DB.live.id, date:DB.live.date, pids:L.pids, names:L.names, scores:L.scores, seq:buildSeq(L.pids.length), idx:L.idx, golpe:L.golpe||1, hist:Array.from({length:L.idx},(_,i)=>i) }; }
+  catch(e){ alert('No se pudo recuperar la partida.'); clearLive(); return; }
+  document.getElementById('m-setup').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden');
+  if(game.idx>=game.seq.length){ showDone(); return; }
+  document.getElementById('m-play').classList.remove('hidden'); renderPlay();
+}
+function discardLive(){ if(confirm('¿Descartar la partida en curso?')) clearLive(); if(!online) renderAll(); }
+function curRec(){ const e=game.seq[game.idx]; return game.scores[game.pids[e.p]][e.j][e.b]; }
+function pick(zone){
+  if(!game) return;
+  const r=curRec(); r[GOLPES[game.golpe-1]]=zone;
+  if(zone==='hoyo' || game.golpe===4){ game.hist.push(game.idx); game.idx++; game.golpe=1; if(game.idx>=game.seq.length){ persistLive(); showDone(); return; } }
+  else game.golpe++;
+  persistLive(); renderPlay();
+}
+function undo(){
+  if(!game) return;
+  if(game.golpe>1){ curRec()[GOLPES[game.golpe-1]]=null; game.golpe--; }
+  else if(game.idx>0){ game.idx--; game.hist.pop(); const r=curRec(); const c=filledCount(r); if(c>0){ r[GOLPES[c-1]]=null; game.golpe=c; } else game.golpe=1; }
+  persistLive(); renderPlay();
+}
+function renderPlay(){
+  const e=game.seq[game.idx]; const ballNum=e.j*N_BOLAS+e.b+1;
+  document.getElementById('p-jug').textContent=e.j+1;
+  document.getElementById('p-ball').textContent=ballNum;
+  document.getElementById('p-who').textContent=game.names[e.p];
+  document.getElementById('p-what').textContent='Salida '+(e.j+1)+' · Bola '+ballNum+' de 6 · GOLPE '+game.golpe;
+  document.getElementById('p-dots').innerHTML=[1,2,3,4,5,6].map(n=>{ const cls=n<ballNum?'done':(n===ballNum?'cur':''); const gap=(n===3||n===5)?'margin-left:10px':''; return '<div class="dot '+cls+'" style="'+gap+'"></div>'; }).join('');
+  const rec=curRec(); const done=filledCount(rec);
+  let bc=''; for(let i=0;i<done;i++){ const z=rec[GOLPES[i]]; const zl=ZONES.find(x=>x.k===z); bc+='<span class="bc">G'+(i+1)+': <b>'+zl.label+'</b></span>'; }
+  document.getElementById('p-breadcrumb').innerHTML=bc;
+  const g=GOLPES[game.golpe-1]; const prevZone=game.golpe>1?rec[GOLPES[game.golpe-2]]:null;
+  document.getElementById('g-lab').textContent='Golpe '+game.golpe+' — ¿dónde quedó?';
+  document.getElementById('g-zones').innerHTML=ZONES.map(z=>{ const pts=(z.k===prevZone&&z.k!=='hoyo')?0:PTS4[g][z.k]; return '<div class="zone z-'+z.k+'" onclick="pick(\''+z.k+'\')"><span class="sym">'+z.sym+'</span><span class="zn">'+z.label+'</span><span class="zp">+'+pts+'</span></div>'; }).join('');
+  const totals=game.pids.map(id=>matchTotal(game.scores[id])); const max=Math.max(...totals);
+  document.getElementById('p-board').innerHTML='<tr><th>Jugador</th><th class="num">S1</th><th class="num">S2</th><th class="num">S3</th><th class="num">Total</th></tr>'+
+    game.pids.map((id,i)=>{ const js=game.scores[id].map(sal=>sal.reduce((a,r)=>a+ballPts(r),0)); const lead=totals[i]===max&&max>0?' class="lead"':''; return '<tr><td'+lead+'>'+esc(game.names[i])+'</td><td class="num">'+js[0]+'</td><td class="num">'+js[1]+'</td><td class="num">'+js[2]+'</td><td class="num"'+(lead?' style="color:var(--coral);font-weight:900"':'')+'><b>'+totals[i]+'</b></td></tr>'; }).join('');
+}
+function showDone(){
+  document.getElementById('m-play').classList.add('hidden'); document.getElementById('m-done').classList.remove('hidden');
+  const totals=game.pids.map(id=>matchTotal(game.scores[id])); const max=Math.max(...totals);
+  const winners=game.names.filter((n,i)=>totals[i]===max);
+  document.getElementById('d-winner').textContent = game.pids.length===1?game.names[0]+' hizo '+max+' puntos' : winners.length>1?'🤝 Empate en '+max+' pts: '+winners.join(' y ') : '🏅 Ganó '+winners[0]+' con '+max+' puntos';
+  document.getElementById('d-table').innerHTML='<tr><th>Jugador</th><th class="num">S1</th><th class="num">S2</th><th class="num">S3</th><th class="num">Total</th></tr>'+
+    game.pids.map((id,i)=>{ const js=game.scores[id].map(sal=>sal.reduce((a,r)=>a+ballPts(r),0)); return '<tr><td>'+esc(game.names[i])+'</td><td class="num">'+js[0]+'</td><td class="num">'+js[1]+'</td><td class="num">'+js[2]+'</td><td class="num rk-pts">'+totals[i]+'</td></tr>'; }).join('');
+}
+function saveMatch(){
+  const m={ id:game.id, date:new Date().toISOString(), players:game.pids.map((id,i)=>({ id, name:game.names[i], jugadas:game.scores[id], total:matchTotal(game.scores[id]) })) };
+  persistMatch(m); clearLive(); game=null; selOrder=[];
+  document.getElementById('m-done').classList.add('hidden'); document.getElementById('m-setup').classList.remove('hidden'); renderSetup(); go('ranking');
+}
+function cancelMatch(){ if(game && game.idx>0 && !confirm('¿Descartar la partida en curso?')) return; clearLive(); game=null; document.getElementById('m-play').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden'); document.getElementById('m-setup').classList.remove('hidden'); renderSetup(); }
+
+/* ---------- mapa visual de zonas ---------- */
+function zoneMapSvg(zc, title){
+  const tot=zc.fuera+zc.circulo+zc.cuadrado+zc.hoyo;
+  const pct=k=> tot?Math.round(100*zc[k]/tot):0;
+  const heat=k=> tot?(zc[k]/tot)*0.55:0;
+  return '<div style="flex:1;min-width:120px">'+
+    '<div style="text-align:center;font-size:.62rem;font-weight:800;letter-spacing:.06em;color:var(--dim);margin-bottom:4px">'+title+' · '+tot+'</div>'+
+    '<svg viewBox="0 0 160 132" style="width:100%">'+
+    '<rect width="160" height="132" rx="12" fill="#0f2027"/>'+
+    '<ellipse cx="80" cy="70" rx="58" ry="42" fill="rgba(56,189,248,'+heat('circulo')+')" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3"/>'+
+    '<path d="M80 38 L118 70 L80 102 L42 70 Z" fill="rgba(251,191,36,'+heat('cuadrado')+')" stroke="#fbbf24" stroke-width="1.5"/>'+
+    '<ellipse cx="80" cy="76" rx="12" ry="6" fill="#0a0f14" stroke="rgba(163,230,53,'+(0.35+heat('hoyo'))+')" stroke-width="2.5"/>'+
+    '<text x="15" y="24" fill="#f87171" font-size="17" font-weight="900">'+pct('fuera')+'%</text>'+
+    '<text x="15" y="34" fill="#f87171" font-size="8" opacity=".8">'+zc.fuera+'</text>'+
+    '<text x="31" y="73" fill="#38bdf8" font-size="17" font-weight="900" text-anchor="middle">'+pct('circulo')+'%</text>'+
+    '<text x="31" y="83" fill="#38bdf8" font-size="8" opacity=".8" text-anchor="middle">'+zc.circulo+'</text>'+
+    '<text x="80" y="57" fill="#fbbf24" font-size="17" font-weight="900" text-anchor="middle">'+pct('cuadrado')+'%</text>'+
+    '<text x="80" y="66" fill="#fbbf24" font-size="8" opacity=".8" text-anchor="middle">'+zc.cuadrado+'</text>'+
+    '<text x="80" y="80" fill="#e9f2f6" font-size="9" font-weight="800" text-anchor="middle">'+zc.hoyo+'</text>'+
+    '<text x="80" y="99" fill="#a3e635" font-size="17" font-weight="900" text-anchor="middle">'+pct('hoyo')+'%</text>'+
+    '</svg></div>';
+}
+
+/* ---------- tablas "mejores N" ---------- */
+function topNStats(N){
+  const out=[]; const pids=new Set();
+  Object.values(DB.matches).forEach(m=>m.players.forEach(p=>pids.add(p.id)));
+  pids.forEach(pid=>{
+    const exSet=excludedSetFor(pid); const arr=[]; let name='';
+    Object.values(DB.matches).forEach(m=>{ if(exSet.has(m.id)) return; const idx=m.players.findIndex(p=>p.id===pid); if(idx<0) return; const pl=m.players[idx]; name=pl.name; const mm=matchMetrics(pl); const totalsAll=m.players.map(x=>matchTotal(x.jugadas)); const win=(mm.total===Math.max(...totalsAll)&&m.players.length>1); arr.push({...mm,win}); });
+    if(!arr.length) return;
+    const realCount=arr.length; arr.sort((a,b)=>b.total-a.total); const sub=arr.slice(0,N);
+    const pj=sub.length, pts=sub.reduce((a,x)=>a+x.total,0), wins=sub.reduce((a,x)=>a+(x.win?1:0),0);
+    const hoyos=sub.reduce((a,x)=>a+x.hoyos,0), golpes=sub.reduce((a,x)=>a+x.golpes,0), emb=sub.reduce((a,x)=>a+x.emb,0), best=sub.reduce((a,x)=>Math.max(a,x.total),0);
+    out.push({ id:pid, name, complete:realCount>=N, faltan:Math.max(0,N-realCount), pj, pts, wins, hoyos, best, prom:pj?pts/pj:0, zonaPct:golpes?Math.round(100*emb/golpes):0 });
+  });
+  out.sort((a,b)=> (b.complete-a.complete) || (b.prom-a.prom));
+  return out;
+}
+function topNTableHtml(N){
+  const rows=topNStats(N);
+  if(!rows.length) return '<div class="empty">Todavía no hay partidos cargados.</div>';
+  return '<table><tr><th>Jugador</th><th class="num">PJ</th><th class="num">G</th><th class="num">Pts</th><th class="num">Prom</th><th class="num">⛳</th><th class="num">% en Zona</th><th class="num">Mejor</th></tr>'+
+    rows.map(r=>{ const nc=esc(r.name)+(r.complete?' <span style="color:var(--green);font-size:.66rem">✓'+N+'</span>':' <span style="color:var(--gold);font-size:.66rem">faltan '+r.faltan+'</span>'); return '<tr><td class="rk-name" style="cursor:pointer;text-decoration:underline dotted" onclick="showTopNDetail('+N+',\''+r.id+'\')">'+nc+' 🔍</td><td class="num">'+r.pj+'</td><td class="num">'+r.wins+'</td><td class="num">'+r.pts+'</td><td class="num">'+r.prom.toFixed(1)+'</td><td class="num">'+r.hoyos+'</td><td class="num">'+r.zonaPct+'%</td><td class="num rk-pts">'+r.best+'</td></tr>'; }).join('')+
+    '</table><p class="muted" style="margin-top:8px"><span style="color:var(--green)">✓'+N+'</span>: sobre sus '+N+' mejores partidos · <span style="color:var(--gold)">faltan X</span>: aún no llega a '+N+', sobre todos sus partidos reales.</p>';
+}
+function topNCardHtml(N,titulo){
+  return '<div class="card" style="overflow-x:auto"><h2>'+titulo+'</h2><p class="muted" style="margin-bottom:12px">Mismas métricas que "Por jugador", sobre los <b>'+N+' mejores partidos reales</b> de cada uno (sin los tachados por hándicap). Quien no llegó a '+N+' aparece con lo que tiene y cuántos le faltan.</p>'+topNTableHtml(N)+'</div>';
+}
+function showTopNDetail(N,pid){
+  const exSet=excludedSetFor(pid); const arr=[]; let name='';
+  Object.values(DB.matches).forEach(m=>{ if(exSet.has(m.id)) return; const idx=m.players.findIndex(p=>p.id===pid); if(idx<0) return; const pl=m.players[idx]; name=pl.name; const sal=pl.jugadas.map(s=>s.reduce((a,r)=>a+ballPts(r),0)); let hoyos=0; pl.jugadas.forEach(s=>s.forEach(r=>{ for(let i=0;i<4;i++){ if(r[GOLPES[i]]==='hoyo'){hoyos++;break;} if(!r[GOLPES[i]])break; } })); arr.push({date:m.date||'', total:matchTotal(pl.jugadas), sal, hoyos}); });
+  arr.sort((a,b)=>b.total-a.total); const sub=arr.slice(0,N); const pts=sub.reduce((a,x)=>a+x.total,0);
+  const rowsHtml=sub.map((x,i)=>{ const d=x.date?new Date(x.date):null; const fecha=d?d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—'; return '<tr><td class="num" style="color:var(--dim)">'+(i+1)+'</td><td>'+fecha+'</td><td class="num">'+x.sal[0]+'</td><td class="num">'+x.sal[1]+'</td><td class="num">'+x.sal[2]+'</td><td class="num">'+x.hoyos+'</td><td class="num rk-pts">'+x.total+'</td></tr>'; }).join('');
+  const bg=document.createElement('div'); bg.className='modal-bg'; bg.id='topn-modal';
+  bg.innerHTML='<div class="modal" style="max-width:430px"><h3>'+esc(name)+' · '+sub.length+' mejores</h3><p style="margin-bottom:12px">Partidos contados (sin tachados por hándicap). Suman <b style="color:var(--coral)">'+pts+'</b> pts · promedio <b>'+(sub.length?(pts/sub.length).toFixed(1):0)+'</b>.</p><div style="max-height:52vh;overflow:auto"><table style="font-size:.8rem"><tr><th class="num">#</th><th>Fecha</th><th class="num">S1</th><th class="num">S2</th><th class="num">S3</th><th class="num">⛳</th><th class="num">Total</th></tr>'+rowsHtml+'</table></div><button class="btn ghost" style="margin-top:14px" onclick="closeTopNDetail()">Cerrar</button></div>';
+  document.body.appendChild(bg); bg.addEventListener('click',e=>{ if(e.target===bg) closeTopNDetail(); });
+}
+function closeTopNDetail(){ const m=document.getElementById('topn-modal'); if(m) m.remove(); }
+let customTopN=6;
+function setCustomTopN(v){ v=parseInt(v,10); if(isNaN(v)||v<1)v=1; if(v>500)v=500; customTopN=v; const t=document.getElementById('custom-topn-table'); if(t) t.innerHTML=topNTableHtml(customTopN); const inp=document.getElementById('custom-topn-input'); if(inp) inp.value=customTopN; }
+
+/* ---------- evolución ---------- */
+const MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+let evoPlayer=null;
+function evoData(pid){
+  const exSet=excludedSetFor(pid); const arr=[];
+  Object.values(DB.matches).forEach(m=>{ const idx=m.players.findIndex(p=>p.id===pid); if(idx<0) return; const pl=m.players[idx]; const mm=matchMetrics(pl); const totalsAll=m.players.map(x=>matchTotal(x.jugadas)); const win=(mm.total===Math.max(...totalsAll)&&m.players.length>1); arr.push({ date:m.date||'', ym:(m.date||'').slice(0,7), total:mm.total, win, hoyos:mm.hoyos, golpes:mm.golpes, emb:mm.emb, dropped:exSet.has(m.id) }); });
+  arr.sort((a,b)=>a.date.localeCompare(b.date)); return arr;
+}
+function ymLabel(ym){ if(!ym||ym.length<7) return '—'; return MESES[+ym.slice(5,7)-1]+' '+ym.slice(2,4); }
+function evoChartSvg(pid){
+  const arr=evoData(pid).filter(a=>!a.dropped);
+  if(!arr.length) return '<div class="empty">Este jugador no tiene partidos.</div>';
+  const W=340,H=210,padL=28,padR=10,padT=14,padB=30, plotW=W-padL-padR, plotH=H-padT-padB, n=arr.length;
+  const niceMax=Math.max(10,Math.ceil(Math.max(...arr.map(a=>a.total),1)/10)*10);
+  const xF=i=> n>1?padL+i*plotW/(n-1):padL+plotW/2; const yF=v=>padT+plotH*(1-v/niceMax);
+  const avg=arr.reduce((a,x)=>a+x.total,0)/n;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%">';
+  [0,0.5,1].forEach(f=>{ const v=Math.round(niceMax*f), y=yF(v); s+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#2a3846" stroke-width="1"/><text x="2" y="'+(y+3)+'" fill="#8497a6" font-size="8">'+v+'</text>'; });
+  let prev=''; arr.forEach((a,i)=>{ if(a.ym!==prev){ const x=xF(i); if(i>0) s+='<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+plotH)+'" stroke="#243140" stroke-width="1" stroke-dasharray="2 3"/>'; s+='<text x="'+x+'" y="'+(H-10)+'" fill="#8497a6" font-size="8" text-anchor="middle">'+ymLabel(a.ym)+'</text>'; prev=a.ym; } });
+  const ya=yF(avg); s+='<line x1="'+padL+'" y1="'+ya+'" x2="'+(W-padR)+'" y2="'+ya+'" stroke="#64748b" stroke-width="1" stroke-dasharray="4 3"/><text x="'+(W-padR)+'" y="'+(ya-3)+'" fill="#8497a6" font-size="8" text-anchor="end">prom '+avg.toFixed(1)+'</text>';
+  if(n>1){ s+='<polyline points="'+arr.map((a,i)=>xF(i)+','+yF(a.total)).join(' ')+'" fill="none" stroke="#2dd4bf" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'; }
+  arr.forEach((a,i)=> s+='<circle cx="'+xF(i)+'" cy="'+yF(a.total)+'" r="3.4" fill="#2dd4bf"/>');
+  s+='</svg>';
+  const best=Math.max(...arr.map(a=>a.total)), worst=Math.min(...arr.map(a=>a.total)), last=arr[n-1].total;
+  s+='<p class="muted" style="margin-top:6px;font-size:.72rem">'+n+' partidos (sin descartados por hándicap) · mejor '+best+' · peor '+worst+' · último '+last+' · promedio '+avg.toFixed(1)+'</p>';
+  return s;
+}
+function evoMonthlyHtml(pid){
+  const arr=evoData(pid).filter(a=>!a.dropped); if(!arr.length) return '';
+  const byYm={}; arr.forEach(a=>{ (byYm[a.ym]=byYm[a.ym]||[]).push(a); });
+  const yms=Object.keys(byYm).sort();
+  const rows=yms.map((ym,idx)=>{ const g=byYm[ym]; const pj=g.length, pts=g.reduce((a,x)=>a+x.total,0), wins=g.reduce((a,x)=>a+(x.win?1:0),0), hoyos=g.reduce((a,x)=>a+x.hoyos,0), golpes=g.reduce((a,x)=>a+x.golpes,0), emb=g.reduce((a,x)=>a+x.emb,0), best=Math.max(...g.map(x=>x.total)); return '<tr><td class="rk-name">Mes '+(idx+1)+' <span class="sub" style="font-size:.66rem">'+ymLabel(ym)+'</span></td><td class="num">'+pj+'</td><td class="num">'+wins+'</td><td class="num">'+pts+'</td><td class="num">'+(pts/pj).toFixed(1)+'</td><td class="num">'+hoyos+'</td><td class="num">'+(golpes?Math.round(100*emb/golpes):0)+'%</td><td class="num rk-pts">'+best+'</td></tr>'; }).join('');
+  return '<h3 style="margin-top:14px">Por mes</h3><div style="overflow-x:auto"><table><tr><th>Mes</th><th class="num">PJ</th><th class="num">G</th><th class="num">Pts</th><th class="num">Prom</th><th class="num">⛳</th><th class="num">% en Zona</th><th class="num">Mejor</th></tr>'+rows+'</table></div>';
+}
+function setEvoPlayer(id){ evoPlayer=id; const c=document.getElementById('evo-chart'); if(c) c.innerHTML=evoChartSvg(id); const t=document.getElementById('evo-monthly'); if(t) t.innerHTML=evoMonthlyHtml(id); }
+
+/* ---------- render stats ---------- */
+function renderStats(){
+  const el=document.getElementById('st-body');
+  const ms=Object.values(DB.matches).sort((a,b)=>b.date.localeCompare(a.date));
+  const st=playerStats();
+  const rows=Object.entries(st).map(([id,s])=>({id,...s})).sort((a,b)=> (a.pj?b.pts/b.pj:0)-(b.pj?a.pts/a.pj:0) || b.pts-a.pts);
+  if(!ms.length){ el.innerHTML='<div class="card"><div class="empty"><span class="big">📈</span>Las estadísticas aparecen cuando se registra la primera partida.</div></div>'; return; }
+  let balls=0, hoyos=0, recPts=0, recName='', recSal=0, recSalName='';
+  rows.forEach(r=>{ hoyos+=r.hoyos; if(r.best>recPts){recPts=r.best;recName=r.name;} if(r.bestSalida>recSal){recSal=r.bestSalida;recSalName=r.name;} });
+  ms.forEach(m=>m.players.forEach(()=>balls+=6));
+
+  const gz2=GOLPES.map(()=>({fuera:0,circulo:0,cuadrado:0,hoyo:0}));
+  const gpts=[0,0,0,0];
+  rows.forEach(r=>{ for(let i=0;i<4;i++){ gpts[i]+=r.ptsG[i]; ZONES.forEach(z=> gz2[i][z.k]+=r.z[GOLPES[i]][z.k]); } });
+  const gTot=i=> gz2[i].fuera+gz2[i].circulo+gz2[i].cuadrado+gz2[i].hoyo;
+  const gEmb=i=> gTot(i)?Math.round(100*(gTot(i)-gz2[i].fuera)/gTot(i)):0;
+
+  let html='<div class="card"><h2>🏟 El torneo</h2><table>'+
+    '<tr><td>Partidas jugadas</td><td class="num"><b>'+ms.length+'</b></td></tr>'+
+    '<tr><td>Bolas tiradas</td><td class="num"><b>'+balls+'</b></td></tr>'+
+    '<tr><td>Hoyos embocados</td><td class="num"><b>⛳ '+hoyos+'</b></td></tr>'+
+    '<tr><td>Récord de partida</td><td class="num"><b>'+recPts+'</b> · '+esc(recName)+'</td></tr>'+
+    '<tr><td>Mejor salida (2 bolas)</td><td class="num"><b>'+recSal+'</b> · '+esc(recSalName)+'</td></tr>'+
+    '</table></div>';
+
+  html+='<div class="card" style="overflow-x:auto"><h2>⚖️ Por golpe (1 a 4)</h2><table>'+
+    '<tr><th></th><th class="num">Golpes</th><th class="num">⛳</th><th class="num">% en Zona</th><th class="num">Puntos</th></tr>'+
+    [0,1,2,3].map(i=>'<tr><td class="rk-name">Golpe '+(i+1)+'</td><td class="num">'+gTot(i)+'</td><td class="num">'+gz2[i].hoyo+'</td><td class="num">'+gEmb(i)+'%</td><td class="num rk-pts">'+gpts[i]+'</td></tr>').join('')+
+    '<tr><td class="rk-name" style="color:var(--coral)">Total</td><td class="num">'+[0,1,2,3].reduce((a,i)=>a+gTot(i),0)+'</td><td class="num">'+hoyos+'</td><td class="num">—</td><td class="num rk-pts">'+gpts.reduce((a,b)=>a+b,0)+'</td></tr>'+
+    '</table></div>';
+
+  html+='<div class="card" style="overflow-x:auto"><h2>👤 Por jugador</h2><table>'+
+    '<tr><th>Jugador</th><th class="num">PJ</th><th class="num">G</th><th class="num">Pts</th><th class="num">Prom</th><th class="num">⛳</th><th class="num">% en Zona</th><th class="num">Mejor</th></tr>'+
+    rows.map(r=>'<tr><td class="rk-name">'+esc(r.name)+(r.handicap&&r.dropped?' <span style="color:var(--gold);font-size:.7rem">⚖️-'+r.dropped+'</span>':'')+'</td><td class="num">'+r.pj+'</td><td class="num">'+r.wins+'</td><td class="num">'+r.pts+'</td><td class="num">'+(r.pts/r.pj).toFixed(1)+'</td><td class="num">'+r.hoyos+'</td><td class="num">'+(r.golpes?Math.round(100*r.embocadas/r.golpes):0)+'%</td><td class="num">'+r.best+'</td></tr>').join('')+
+    '</table><p class="muted" style="margin-top:8px">PJ: partidas · G: ganadas · Prom: puntos por partida · ⛳: hoyos · % en Zona: golpes que cayeron en zona con puntaje · Mejor: mejor partida.</p></div>';
+
+  html+='<div class="card"><h2>🎯 Mapa de zonas</h2>'+
+    '<div style="margin-bottom:16px"><div style="font-weight:800;margin-bottom:6px;color:var(--coral)">🌍 Todos los jugadores</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:10px">'+[0,1,2,3].map(i=>zoneMapSvg(gz2[i],'GOLPE '+(i+1))).join('')+'</div></div>'+
+    rows.map(r=>'<div style="margin-bottom:16px"><div style="font-weight:800;margin-bottom:6px">'+esc(r.name)+'</div><div style="display:flex;flex-wrap:wrap;gap:10px">'+[0,1,2,3].map(i=>zoneMapSvg(r.z[GOLPES[i]],'GOLPE '+(i+1))).join('')+'</div></div>').join('')+
+    '</div>';
+
+  const hcomp=rows.map(r=>({name:r.name, hoyoPts:r.hoyoPts, hoyoBy:r.hoyoBy, hoyos:r.hoyos})).filter(r=>r.hoyoPts>0).sort((a,b)=>b.hoyoPts-a.hoyoPts||b.hoyos-a.hoyos);
+  html+='<div class="card" style="overflow-x:auto"><h2>🕳️ Competencia por Hoyo</h2>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">'+
+      '<span style="background:rgba(163,230,53,.16);border:1px solid rgba(163,230,53,.4);color:#a3e635;font-size:.68rem;font-weight:800;padding:4px 8px;border-radius:99px">⛳ en golpe 1 = 18</span>'+
+      '<span style="background:var(--card2);border:1px solid var(--line);font-size:.68rem;font-weight:800;padding:4px 8px;border-radius:99px">golpe 2 = 9</span>'+
+      '<span style="background:var(--card2);border:1px solid var(--line);font-size:.68rem;font-weight:800;padding:4px 8px;border-radius:99px">golpe 3 = 3</span>'+
+      '<span style="background:var(--card2);border:1px solid var(--line);font-size:.68rem;font-weight:800;padding:4px 8px;border-radius:99px">golpe 4 = 1</span>'+
+    '</div>';
+  if(!hcomp.length){ html+='<div class="empty" style="padding:18px">Todavía nadie embocó ningún hoyo.</div>'; }
+  else { const medals=['🥇','🥈','🥉']; html+='<table><tr><th></th><th>Jugador</th><th class="num">G1</th><th class="num">G2</th><th class="num">G3</th><th class="num">G4</th><th class="num">Total ⛳</th><th class="num">Puntos</th></tr>'+
+    hcomp.map((r,i)=>'<tr><td class="rk-pos">'+(medals[i]||(i+1))+'</td><td class="rk-name">'+esc(r.name)+'</td><td class="num">'+r.hoyoBy[0]+'</td><td class="num">'+r.hoyoBy[1]+'</td><td class="num">'+r.hoyoBy[2]+'</td><td class="num">'+r.hoyoBy[3]+'</td><td class="num">'+r.hoyos+'</td><td class="num rk-pts">'+r.hoyoPts+'</td></tr>').join('')+
+    '</table><p class="muted" style="margin-top:8px">G1–G4: hoyos embocados en cada golpe. Puntos: 18/9/3/1 según el golpe en que se embocó. Independiente del ranking general.</p>'; }
+  html+='</div>';
+
+  const exAll={}; Object.keys(st).forEach(pid=> exAll[pid]=excludedSetFor(pid));
+  const anyHc=Object.values(st).some(s=>s.handicap&&s.dropped);
+  html+='<div class="card"><h2>🗂 Historial</h2>'+(anyHc?'<p class="muted" style="margin-bottom:10px"><span style="color:var(--gold);text-decoration:line-through">Así</span> = descartado por hándicap para ese jugador.</p>':'')+
+    ms.map(m=>{ const d=new Date(m.date); const fecha=d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const tots=m.players.map(p=>matchTotal(p.jugadas)); const max=Math.max(...tots); const line=m.players.map((p,i)=>{ const ex=exAll[p.id]&&exAll[p.id].has(m.id); const inner=(tots[i]===max&&m.players.length>1&&!ex?'🏅 ':'')+esc(p.name)+' <b>'+tots[i]+'</b>'; return ex?'<span style="color:var(--gold);text-decoration:line-through;opacity:.85">'+inner+'</span> ⚖️':inner; }).join(' · '); const delBtn=isAdmin?'<button class="del" onclick="delMatch(\''+m.id+'\')">🗑</button>':''; return '<div class="pl-item"><div style="flex:1"><div style="font-size:.85rem">'+line+'</div><div class="sub">'+fecha+'</div></div>'+delBtn+'</div>'; }).join('')+'</div>';
+
+  html+=topNCardHtml(20,'🏅 Los 20 mejores');
+  html+=topNCardHtml(10,'🥇 Los 10 mejores');
+  html+='<div class="card" style="overflow-x:auto"><h2>🎚️ Mejores a medida</h2><p class="muted" style="margin-bottom:12px">Elegí cuántos de los mejores partidos considerar y la tabla se recalcula sola.</p>'+
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap"><span style="font-weight:700">Mejores partidos:</span><button class="hc-btn" onclick="setCustomTopN(customTopN-1)">−</button><input id="custom-topn-input" type="number" min="1" max="500" value="'+customTopN+'" onchange="setCustomTopN(this.value)" style="width:80px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--txt);font-size:1.2rem;font-weight:800;text-align:center"><button class="hc-btn" onclick="setCustomTopN(customTopN+1)">+</button></div><div id="custom-topn-table">'+topNTableHtml(customTopN)+'</div></div>';
+
+  const evoIds=Object.keys(st);
+  if(evoIds.length && (!evoPlayer||!st[evoPlayer])) evoPlayer=evoIds[0];
+  html+='<div class="card"><h2>📈 Evolución del jugador</h2>';
+  if(!evoIds.length){ html+='<div class="empty">Sin datos todavía.</div>'; }
+  else { html+='<select id="evo-select" onchange="setEvoPlayer(this.value)" style="width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--txt);font-size:1rem;font-weight:700">'+evoIds.map(id=>'<option value="'+id+'"'+(id===evoPlayer?' selected':'')+'>'+esc(st[id].name)+'</option>').join('')+'</select><div id="evo-chart" style="margin-top:12px"></div><div id="evo-monthly"></div>'; }
+  html+='</div>';
+
+  el.innerHTML=html;
+  if(evoIds.length){ const c=document.getElementById('evo-chart'); if(c) c.innerHTML=evoChartSvg(evoPlayer); const t=document.getElementById('evo-monthly'); if(t) t.innerHTML=evoMonthlyHtml(evoPlayer); }
+}
+function delMatch(id){ if(!isAdmin){ alert('Solo el administrador puede borrar partidas.'); return; } if(confirm('¿Borrar esta partida? Se descuentan sus puntos del ranking.')) removeMatch(id); }
+
+/* ---------- render global ---------- */
+function renderAll(){ renderRanking(); renderPlayers(); renderStats(); if(!game) renderSetup(); }
+initData();
+</script>
+</body>
+</html>
