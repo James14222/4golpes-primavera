@@ -288,7 +288,7 @@ const FIREBASE_CONFIG = {
 const DB_NODE = "copa-primavera";
 /* ===================================================================== */
 
-const APP_VERSION = "1.03"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
+const APP_VERSION = "1.04"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
 
 const ADMIN_PIN = "1234"; // clave admin de 4 dígitos (cambiala por la que quieras)
 let isAdmin = false;
@@ -455,8 +455,26 @@ function addPlayer(){
 function delPlayer(id){
   if(!isAdmin){ alert('Solo el administrador puede borrar.'); return; }
   const p=DB.players[id]; if(!p) return;
-  if(Object.values(DB.matches).some(m=>m.players.some(x=>x.id===id))){ alert('Este jugador ya tiene partidas registradas. No se puede borrar.'); return; }
+  if(Object.values(DB.matches).some(m=>m.players.some(x=>x.id===id))){ alert('Este jugador ya tiene partidas registradas. No se puede borrar (usá ✏️ para renombrarlo).'); return; }
   if(confirm('¿Borrar a '+p.name+'?')) removePlayer(id);
+}
+function editPlayer(id){
+  if(!isAdmin){ alert('Solo el administrador puede modificar.'); return; }
+  const p=DB.players[id]; if(!p) return;
+  const nn=prompt('Nuevo nombre para '+p.name+':', p.name);
+  if(nn===null) return;
+  const name=nn.trim().replace(/\s+/g,' ');
+  if(!name){ alert('El nombre no puede quedar vacío.'); return; }
+  if(name===p.name) return;
+  if(Object.values(DB.players).some(x=>x.id!==id && x.name.toLowerCase()===name.toLowerCase())){ alert('Ya existe otro jugador con ese nombre.'); return; }
+  if(online){
+    fdb.child('players/'+id).update({name});
+    Object.values(DB.matches).forEach(m=>{ m.players.forEach((pl,i)=>{ if(pl.id===id) fdb.child('matches/'+m.id+'/players/'+i+'/name').set(name); }); });
+  } else {
+    DB.players[id].name=name;
+    Object.values(DB.matches).forEach(m=>m.players.forEach(pl=>{ if(pl.id===id) pl.name=name; }));
+    saveLocal(); renderAll();
+  }
 }
 function renderPlayers(){
   const list=document.getElementById('pl-list');
@@ -469,7 +487,7 @@ function renderPlayers(){
     if(s){ sub=s.pj+' partida'+(s.pj===1?'':'s')+' · '+s.pts+' pts'; if(hcOn) sub+=' · <span style="color:var(--gold)">⚖️ hándicap'+(s.dropped?' (-'+s.dropped+')':'')+'</span>'; }
     else sub='Sin partidas todavía'+(hcOn?' · <span style="color:var(--gold)">⚖️ hándicap</span>':'');
     let right='';
-    if(isAdmin){ right+='<button class="hc-btn '+(hcOn?'on':'')+'" onclick="toggleHandicap(\''+p.id+'\')" title="Aplicar hándicap">⚖️</button>'; right+='<button class="del" onclick="delPlayer(\''+p.id+'\')">🗑</button>'; }
+    if(isAdmin){ right+='<button class="hc-btn" onclick="editPlayer(\''+p.id+'\')" title="Modificar nombre">✏️</button>'; right+='<button class="hc-btn '+(hcOn?'on':'')+'" onclick="toggleHandicap(\''+p.id+'\')" title="Aplicar hándicap">⚖️</button>'; right+='<button class="del" onclick="delPlayer(\''+p.id+'\')">🗑</button>'; }
     return '<div class="pl-item"><div class="avatar">'+esc(initials(p.name))+'</div><div style="min-width:0"><div class="nm">'+esc(p.name)+'</div><div class="sub">'+sub+'</div></div><div style="margin-left:auto;display:flex;align-items:center">'+right+'</div></div>';
   }).join('');
   if(isAdmin) list.innerHTML+='<p class="muted" style="margin-top:10px">⚖️ Hándicap: descarta el peor partido de cada 5 (cronológico). No borra nada; los descartados se marcan en el historial y no cuentan en las estadísticas ni el ranking de ese jugador.</p>';
