@@ -294,7 +294,7 @@ const DB_NODE = "copa-primavera";
 const INV_NODE = "copa-invierno-huanguelen";
 /* ===================================================================== */
 
-const APP_VERSION = "2.00"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
+const APP_VERSION = "2.10"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
 const ADMIN_PIN = "1234";   // clave admin de 4 dígitos
 let isAdmin = false;
 
@@ -302,7 +302,7 @@ let isAdmin = false;
 const CUR = {
   GOLPES:['g1','g2','g3'],
   PTS:{ g1:{fuera:0,circulo:2,cuadrado:6,hoyo:18}, g2:{fuera:0,circulo:1,cuadrado:3,hoyo:9}, g3:{fuera:0,circulo:0,cuadrado:1,hoyo:3} },
-  NB:2, NS:3, hoyoMode:'origin'
+  NB:2, NS:3, hoyoMode:'origin', handicapAll:true
 };
 const INV = {
   GOLPES:['g1','g2'],
@@ -427,15 +427,15 @@ function renderPlayers(){
   if(!ps.length){ list.innerHTML='<div class="empty"><span class="big">👥</span>Todavía no hay jugadores.<br>Agregá el primero arriba.</div>'; return; }
   const stats=playerStats(SEASONS.cur.data(), CUR);
   list.innerHTML=ps.map(p=>{
-    const s=stats[p.id]; const hcOn=!!(DB.handicap&&DB.handicap[p.id]);
+    const s=stats[p.id];
     let sub;
-    if(s){ sub=s.pj+' partida'+(s.pj===1?'':'s')+' · '+s.pts+' pts'; if(hcOn) sub+=' · <span style="color:var(--gold)">⚖️ hándicap'+(s.dropped?' (-'+s.dropped+')':'')+'</span>'; }
-    else sub='Sin partidas todavía'+(hcOn?' · <span style="color:var(--gold)">⚖️ hándicap</span>':'');
+    if(s){ sub=s.pj+' partida'+(s.pj===1?'':'s')+' · '+s.pts+' pts'; if(s.dropped) sub+=' · <span style="color:var(--gold)">⚖️ -'+s.dropped+'</span>'; }
+    else sub='Sin partidas todavía';
     let right='';
-    if(isAdmin){ right+='<button class="hc-btn" onclick="editPlayer(\''+p.id+'\')" title="Modificar nombre">✏️</button>'; right+='<button class="hc-btn '+(hcOn?'on':'')+'" onclick="toggleHandicap(\''+p.id+'\')" title="Aplicar hándicap">⚖️</button>'; right+='<button class="del" onclick="delPlayer(\''+p.id+'\')">🗑</button>'; }
+    if(isAdmin){ right+='<button class="hc-btn" onclick="editPlayer(\''+p.id+'\')" title="Modificar nombre">✏️</button>'; right+='<button class="del" onclick="delPlayer(\''+p.id+'\')">🗑</button>'; }
     return '<div class="pl-item"><div class="avatar">'+esc(initials(p.name))+'</div><div style="min-width:0"><div class="nm">'+esc(p.name)+'</div><div class="sub">'+sub+'</div></div><div style="margin-left:auto;display:flex;align-items:center">'+right+'</div></div>';
   }).join('');
-  if(isAdmin) list.innerHTML+='<p class="muted" style="margin-top:10px">⚖️ Hándicap: descarta el peor partido de cada 5 (cronológico). No borra nada; los descartados se marcan en el historial y no cuentan en las estadísticas ni el ranking de ese jugador.</p>';
+  list.innerHTML+='<p class="muted" style="margin-top:10px">⚖️ Hándicap del torneo (activo para todos): se descarta automáticamente el <b>peor partido de cada 5 jugados</b> de cada jugador. No borra nada; los descartados se marcan en el historial y no cuentan en el ranking ni las estadísticas.</p>';
 }
 
 /* ---------- estadísticas (parametrico) ---------- */
@@ -444,7 +444,7 @@ function playerMatchesChrono(pid, data, ctx){
   arr.sort((a,b)=> a.date.localeCompare(b.date) || a.mid.localeCompare(b.mid)); return arr;
 }
 function excludedSetFor(pid, data, ctx){
-  const set=new Set(); if(!data.handicap||!data.handicap[pid]) return set;
+  const set=new Set(); if(!ctx.handicapAll && !(data.handicap&&data.handicap[pid])) return set;
   const arr=playerMatchesChrono(pid,data,ctx);
   for(let s=0;s+5<=arr.length;s+=5){ let w=s; for(let k=s;k<s+5;k++){ if(arr[k].total<arr[w].total) w=k; } set.add(arr[w].mid); }
   return set;
@@ -457,7 +457,7 @@ function playerStats(data, ctx){
   Object.values(data.matches).forEach(m=>{
     const totals=m.players.map(pl=>matchTotal(pl.jugadas,ctx)); const max=Math.max(...totals);
     m.players.forEach((p,pi)=>{
-      if(!st[p.id]) st[p.id]={ name:p.name, pj:0, wins:0, pts:0, ptsG:ctx.GOLPES.map(()=>0), hoyos:0, hDirect:0, hByFuera:0, hByCirc:0, hByCuad:0, hoyoPts:0, golpes:0, embocadas:0, best:0, bestSalida:0, dropped:0, handicap:!!(data.handicap&&data.handicap[p.id]), z:newZ(ctx) };
+      if(!st[p.id]) st[p.id]={ name:p.name, pj:0, wins:0, pts:0, ptsG:ctx.GOLPES.map(()=>0), hoyos:0, hDirect:0, hByFuera:0, hByCirc:0, hByCuad:0, hoyoPts:0, golpes:0, embocadas:0, best:0, bestSalida:0, dropped:0, handicap:!!(ctx.handicapAll || (data.handicap&&data.handicap[p.id])), z:newZ(ctx) };
       const s=st[p.id]; s.name=p.name;
       if(exMap[p.id]&&exMap[p.id].has(m.id)){ s.dropped++; return; }
       const tot=totals[pi]; s.pj++; s.pts+=tot; if(tot===max&&m.players.length>1) s.wins++; if(tot>s.best) s.best=tot;
@@ -616,9 +616,13 @@ function renderStatsHtml(sk){
   const rows=Object.entries(st).map(([id,s])=>({id,...s})).sort((a,b)=> (a.pj?b.pts/b.pj:0)-(b.pj?a.pts/a.pj:0) || b.pts-a.pts);
   if(!ms.length) return '<div class="card"><div class="empty"><span class="big">📈</span>Las estadísticas aparecen cuando se registra la primera partida.</div></div>';
   const NG=ctx.GOLPES.length, NBTOT=ctx.NB*ctx.NS;
-  let balls=0, hoyos=0, recPts=0, recName='', recSal=0, recSalName='';
-  rows.forEach(r=>{ hoyos+=r.hoyos; if(r.best>recPts){recPts=r.best;recName=r.name;} if(r.bestSalida>recSal){recSal=r.bestSalida;recSalName=r.name;} });
+  let balls=0, hoyos=0;
+  rows.forEach(r=>{ hoyos+=r.hoyos; });
   ms.forEach(m=>m.players.forEach(()=>balls+=NBTOT));
+  const recPts = rows.length?Math.max(...rows.map(r=>r.best)):0;
+  const recNames = rows.filter(r=>r.best===recPts && recPts>0).map(r=>r.name);
+  const recSal = rows.length?Math.max(...rows.map(r=>r.bestSalida)):0;
+  const recSalNames = rows.filter(r=>r.bestSalida===recSal && recSal>0).map(r=>r.name);
   const gz=ctx.GOLPES.map(()=>({fuera:0,circulo:0,cuadrado:0,hoyo:0})); const gpts=ctx.GOLPES.map(()=>0);
   rows.forEach(r=>{ for(let i=0;i<NG;i++){ gpts[i]+=r.ptsG[i]; ZONES.forEach(z=> gz[i][z.k]+=r.z[ctx.GOLPES[i]][z.k]); } });
   const gTot=i=> gz[i].fuera+gz[i].circulo+gz[i].cuadrado+gz[i].hoyo; const gEmb=i=> gTot(i)?Math.round(100*(gTot(i)-gz[i].fuera)/gTot(i)):0;
@@ -627,8 +631,8 @@ function renderStatsHtml(sk){
     '<tr><td>Partidas jugadas</td><td class="num"><b>'+ms.length+'</b></td></tr>'+
     '<tr><td>Bolas tiradas</td><td class="num"><b>'+balls+'</b></td></tr>'+
     '<tr><td>Hoyos embocados</td><td class="num"><b>⛳ '+hoyos+'</b></td></tr>'+
-    '<tr><td>Récord de partida</td><td class="num"><b>'+recPts+'</b> · '+esc(recName)+'</td></tr>'+
-    '<tr><td>Mejor salida (2 bolas)</td><td class="num"><b>'+recSal+'</b> · '+esc(recSalName)+'</td></tr>'+
+    '<tr><td>Récord de partida</td><td class="num"><b>'+recPts+'</b> · '+(recNames.length?esc(recNames.join(', ')):'—')+'</td></tr>'+
+    '<tr><td>Mejor salida (2 bolas)</td><td class="num"><b>'+recSal+'</b> · '+(recSalNames.length?esc(recSalNames.join(', ')):'—')+'</td></tr>'+
     '</table></div>';
 
   html+='<div class="card" style="overflow-x:auto"><h2>⚖️ Por golpe</h2><table><tr><th></th><th class="num">Golpes</th><th class="num">⛳</th><th class="num">% en Zona</th><th class="num">Puntos</th></tr>'+
