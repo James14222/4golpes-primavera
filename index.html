@@ -294,7 +294,7 @@ const DB_NODE = "copa-primavera";
 const INV_NODE = "copa-invierno-huanguelen";
 /* ===================================================================== */
 
-const APP_VERSION = "2.10"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
+const APP_VERSION = "2.20"; // X.YZ — Z: retoques · Y: cambios medianos · X: cambios grandes
 const ADMIN_PIN = "1234";   // clave admin de 4 dígitos
 let isAdmin = false;
 
@@ -402,7 +402,7 @@ function toggleHandicap(id){
   if(online){ fdb.child('handicap').set(DB.handicap); } else { saveLocal(); renderAll(); }
 }
 
-function persistLive(){ if(!game) return; const payload={ id:game.id, date:game.date, json:JSON.stringify({pids:game.pids,names:game.names,scores:game.scores,idx:game.idx,golpe:game.golpe}) }; if(online){ fdb.child('live').set(payload); } else { DB.live=payload; saveLocal(); } }
+function persistLive(){ if(!game) return; const payload={ id:game.id, date:game.date, json:JSON.stringify({pids:game.pids,names:game.names,scores:game.scores,idx:game.idx,golpe:game.golpe,orders:game.orders}) }; if(online){ fdb.child('live').set(payload); } else { DB.live=payload; saveLocal(); } }
 function clearLive(){ if(online){ fdb.child('live').remove(); } else { DB.live=null; saveLocal(); } }
 function registerProgress(){ persistLive(); const b=document.getElementById('reg-btn'); b.textContent='✓ Registrado'; setTimeout(()=>{b.textContent='💾 REGISTRAR';},1200); }
 
@@ -515,14 +515,25 @@ function renderSetup(){
   const b=document.getElementById('m-start'); b.disabled=selOrder.length<1; b.textContent=selOrder.length<1?'Elegí al menos un jugador':'Comenzar partida ('+selOrder.length+' jugador'+(selOrder.length===1?'':'es')+')';
 }
 function togglePlayer(id){ const i=selOrder.indexOf(id); if(i>=0) selOrder.splice(i,1); else selOrder.push(id); renderSetup(); }
-function buildSeq(n){ const seq=[]; for(let j=0;j<CUR.NS;j++) for(let p=0;p<n;p++) for(let b=0;b<CUR.NB;b++) seq.push({j,p,b}); return seq; }
+function natOrder(n){ return Array.from({length:n},(_,i)=>i); }
+function buildSeq(n,orders){ const seq=[]; for(let j=0;j<CUR.NS;j++){ const ord=(orders&&orders[j])||natOrder(n); for(const p of ord) for(let b=0;b<CUR.NB;b++) seq.push({j,p,b}); } return seq; }
 function emptyScores(pids){ const sc={}; pids.forEach(id=>{ sc[id]=[]; for(let j=0;j<CUR.NS;j++){ const sal=[]; for(let b=0;b<CUR.NB;b++) sal.push({g1:null,g2:null,g3:null}); sc[id].push(sal); } }); return sc; }
-function startMatch(){ const pids=[...selOrder]; game={ id:uid(), date:new Date().toISOString(), pids, names:pids.map(id=>DB.players[id].name), scores:emptyScores(pids), seq:buildSeq(pids.length), idx:0, golpe:1, hist:[] }; persistLive(); document.getElementById('m-setup').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden'); document.getElementById('m-play').classList.remove('hidden'); renderPlay(); }
-function resumeMatch(){ if(!DB.live) return; try{ const L=JSON.parse(DB.live.json); game={ id:DB.live.id, date:DB.live.date, pids:L.pids, names:L.names, scores:L.scores, seq:buildSeq(L.pids.length), idx:L.idx, golpe:L.golpe||1, hist:Array.from({length:L.idx},(_,i)=>i) }; }catch(e){ alert('No se pudo recuperar.'); clearLive(); return; } document.getElementById('m-setup').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden'); if(game.idx>=game.seq.length){ showDone(); return; } document.getElementById('m-play').classList.remove('hidden'); renderPlay(); }
+function startMatch(){ const pids=[...selOrder]; game={ id:uid(), date:new Date().toISOString(), pids, names:pids.map(id=>DB.players[id].name), scores:emptyScores(pids), orders:[natOrder(pids.length),...Array(CUR.NS-1).fill(null)], idx:0, golpe:1, hist:[] }; game.seq=buildSeq(pids.length,game.orders); persistLive(); document.getElementById('m-setup').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden'); document.getElementById('m-play').classList.remove('hidden'); renderPlay(); }
+function resumeMatch(){ if(!DB.live) return; try{ const L=JSON.parse(DB.live.json); game={ id:DB.live.id, date:DB.live.date, pids:L.pids, names:L.names, scores:L.scores, orders:L.orders||[natOrder(L.pids.length),...Array(CUR.NS-1).fill(null)], idx:L.idx, golpe:L.golpe||1, hist:Array.from({length:L.idx},(_,i)=>i) }; game.seq=buildSeq(L.pids.length,game.orders); }catch(e){ alert('No se pudo recuperar.'); clearLive(); return; } document.getElementById('m-setup').classList.add('hidden'); document.getElementById('m-done').classList.add('hidden'); if(game.idx>=game.seq.length){ showDone(); return; } document.getElementById('m-play').classList.remove('hidden'); renderPlay(); checkOrderTurn(); }
 function discardLive(){ if(confirm('¿Descartar la partida en curso?')) clearLive(); if(!online) renderAll(); }
+/* ---------- orden de turnos por salida ---------- */
+function salidaPts(id,j){ return game.scores[id][j].reduce((a,r)=>a+ballPts(r,CUR),0); }
+function suggestOrder(j){ const prev=game.orders[j-1]||natOrder(game.pids.length); return [...prev].sort((a,b)=>salidaPts(game.pids[b],j-1)-salidaPts(game.pids[a],j-1)||prev.indexOf(a)-prev.indexOf(b)); }
+function checkOrderTurn(){ const n=game.pids.length, per=n*CUR.NB; if(n<2||game.golpe!==1||game.idx%per!==0) return; const j=game.idx/per; if(j<1||j>=CUR.NS||game.orderConfirmed===j) return; if(document.getElementById('order-modal')) return; openOrder(j); }
+function openOrder(j){ game.tmpOrder=[...(game.orders[j]||suggestOrder(j))]; game.tmpJ=j; const bg=document.createElement('div'); bg.className='modal-bg'; bg.id='order-modal'; document.body.appendChild(bg); renderOrder(); }
+function renderOrder(){ const j=game.tmpJ, bg=document.getElementById('order-modal'); if(!bg) return; const n=game.tmpOrder.length;
+  bg.innerHTML='<div class="modal"><h3>Orden de la salida '+(j+1)+'</h3><p>Sugerido por resultado de la salida '+j+' (mejor primero). Podés cambiarlo.</p>'+game.tmpOrder.map((pi,k)=>'<div class="sel-item on" style="cursor:default"><div class="ord" style="margin-left:0">'+(k+1)+'</div><div class="nm" style="font-weight:700">'+esc(game.names[pi])+'</div><span class="muted" style="margin-left:auto;font-size:.75rem">S'+j+': '+salidaPts(game.pids[pi],j-1)+' pts</span><button class="btn ghost" style="width:34px;padding:4px" '+(k===0?'disabled':'')+' onclick="moveOrder('+k+',-1)">▲</button><button class="btn ghost" style="width:34px;padding:4px" '+(k===n-1?'disabled':'')+' onclick="moveOrder('+k+',1)">▼</button></div>').join('')+'<button class="btn" style="margin-top:8px" onclick="confirmOrder()">▶ Comenzar salida '+(j+1)+'</button><button class="btn ghost" style="margin-top:8px" onclick="orderBack()">↩ Deshacer última bola</button></div>'; }
+function moveOrder(k,d){ const o=game.tmpOrder, t=k+d; if(t<0||t>=o.length) return; [o[k],o[t]]=[o[t],o[k]]; renderOrder(); }
+function confirmOrder(){ const j=game.tmpJ; game.orders[j]=[...game.tmpOrder]; game.orderConfirmed=j; game.seq=buildSeq(game.pids.length,game.orders); document.getElementById('order-modal').remove(); persistLive(); renderPlay(); }
+function orderBack(){ document.getElementById('order-modal').remove(); undo(); }
 function curRec(){ const e=game.seq[game.idx]; return game.scores[game.pids[e.p]][e.j][e.b]; }
-function pick(zone){ if(!game) return; const r=curRec(); r[CUR.GOLPES[game.golpe-1]]=zone; if(zone==='hoyo' || game.golpe===CUR.GOLPES.length){ game.hist.push(game.idx); game.idx++; game.golpe=1; if(game.idx>=game.seq.length){ persistLive(); showDone(); return; } } else game.golpe++; persistLive(); renderPlay(); }
-function undo(){ if(!game) return; if(game.golpe>1){ curRec()[CUR.GOLPES[game.golpe-1]]=null; game.golpe--; } else if(game.idx>0){ game.idx--; game.hist.pop(); const r=curRec(); const c=filledCount(r,CUR); if(c>0){ r[CUR.GOLPES[c-1]]=null; game.golpe=c; } else game.golpe=1; } persistLive(); renderPlay(); }
+function pick(zone){ if(!game) return; const r=curRec(); r[CUR.GOLPES[game.golpe-1]]=zone; if(zone==='hoyo' || game.golpe===CUR.GOLPES.length){ game.hist.push(game.idx); game.idx++; game.golpe=1; if(game.idx>=game.seq.length){ persistLive(); showDone(); return; } } else game.golpe++; persistLive(); renderPlay(); checkOrderTurn(); }
+function undo(){ if(!game) return; if(game.golpe>1){ curRec()[CUR.GOLPES[game.golpe-1]]=null; game.golpe--; } else if(game.idx>0){ game.orderConfirmed=null; game.idx--; game.hist.pop(); const r=curRec(); const c=filledCount(r,CUR); if(c>0){ r[CUR.GOLPES[c-1]]=null; game.golpe=c; } else game.golpe=1; } persistLive(); renderPlay(); }
 function renderPlay(){
   const e=game.seq[game.idx]; const ballNum=e.j*CUR.NB+e.b+1;
   document.getElementById('p-jug').textContent=e.j+1; document.getElementById('p-ball').textContent=ballNum;
